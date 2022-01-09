@@ -137,5 +137,14 @@ public class ClienteService {
 		
 		return null;
 	}
+	
+	public Optional<Cliente> atualizarUsuario(Cliente usuario) {
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+		String senhaEncoder = encoder.encode(usuario.getSenha());
+		usuario.setSenha(senhaEncoder);
+		
+		return Optional.of(clienteRepository.save(usuario));
+	}
 
 }

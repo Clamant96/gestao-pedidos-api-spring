@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.helpconnect.MinhaListaDePedidos.model.Cliente;
 import br.com.helpconnect.MinhaListaDePedidos.model.ClienteLogin;
 import br.com.helpconnect.MinhaListaDePedidos.repository.ClienteRepository;
+import br.com.helpconnect.MinhaListaDePedidos.repository.ListaDeDesejosRepository;
+import br.com.helpconnect.MinhaListaDePedidos.repository.PedidoRepository;
 import br.com.helpconnect.MinhaListaDePedidos.service.ClienteService;
 
 @RestController
@@ -31,6 +33,12 @@ public class ClienteController {
 	
 	@Autowired
 	private ClienteService service;
+	
+	@Autowired
+	private PedidoRepository pedidoRepository;
+	
+	@Autowired
+	private ListaDeDesejosRepository listaDeDesejosRepository;
 	
 	@GetMapping
 	public ResponseEntity<List<Cliente>> findAllByCliente() {
@@ -81,16 +89,27 @@ public class ClienteController {
 		
 	}
 	
-	@PutMapping
+	@PutMapping("/atualizar")
 	public ResponseEntity<Cliente> putCliente(@RequestBody Cliente cliente) {
 		
-		return ResponseEntity.ok(repository.save(cliente));
+		Optional<Cliente> user = service.atualizarUsuario(cliente);
+		
+		try {
+			return ResponseEntity.ok(user.get());
+			
+		}catch(Exception e) {
+			return ResponseEntity.badRequest().build();
+			
+		}
 	}
+	
 	
 	@DeleteMapping("/{id}")
 	public void deletaCliente(@PathVariable long id) {
 		
 		repository.deleteById(id);
+		pedidoRepository.deleteById(id);
+		listaDeDesejosRepository.deleteById(id);
 	}
 
 }
